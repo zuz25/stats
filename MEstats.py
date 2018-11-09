@@ -4,9 +4,10 @@ import time
 #import matplotlib.pyplot as plt
 
 path='../ME Stats Data/'
-date="11-8-"
+date="2018-11-7"
+path=path+date+"/"
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
-df = pd.read_csv(path+date+'raw')
+df = pd.read_csv(path+date+'-raw.csv')
 df_completed= df.dropna()
 #print(df.columns.names)
 
@@ -90,7 +91,7 @@ print("Total Abandoned Rides: ", df['RIDE_STATUS'].str.count("ABANDONED").sum())
 
 
 
-file = open(path+date+"overall-stats.txt","w") 
+file = open(path+date+"-overall-stats.txt","w") 
 #
 file.write(str("Total Cancelled Rides: "+str(df['RIDE_STATUS'].str.count("CANCELLED").sum())))
 file.write(str("Total Queued Rides: "+str(df[(df['STARTED']-df['REQUESTED'])/1000/60>1]['ID'].count())))
@@ -103,7 +104,10 @@ file.close()
 
 #print(stats)
 #print(statsCols)
-
-dfStats.to_csv(path+date+'stats.csv')
-df_completed.to_csv(path+date+'output.csv')
+writer = pd.ExcelWriter(path+date+'-output.xlsx')
+dfStats.to_excel(writer,'stats')
+df_completed.to_excel(writer,'data')
+writer.save()
+#dfStats.(path+date+'-stats.csv')
+#df_completed.to_csv(path+date+'-output.csv')
 #print(df_completed['pickup_actual-eta']/1000/60)
