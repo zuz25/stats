@@ -4,38 +4,73 @@ import time
 #import matplotlib.pyplot as plt
 
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
-df = pd.read_csv('../ME Stats Data/11-7-data.csv')
+df = pd.read_csv('../ME Stats Data/RidesNov8.csv')
 df_completed= df.dropna()
 #print(df.columns.names)
 
+stats = []
+statsIndex =['Max','Min','Mean','Median','STD DEV']
+statsCols =[]
+dfStats=pd.DataFrame(index=statsIndex)
 def durationStats(dataframe,description,initialTimeId,finalTimeId):
     #{0:.3f}.'.format(
-    print("Max Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).max()))
-    print("Min Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).min()))
-    print("Mean Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).mean()))
-    print("Median Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).median()))
-    print("STD Dev of time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).std()))
-    print("\n")
-    dataframe[description]=(dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60
-    print(dataframe[description])
+    theseStats =[]
+    statsCols.append(description)
+    theseStats.append("{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).max()))
+    theseStats.append("{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).min()))
+    theseStats.append("{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).mean()))
+    theseStats.append("{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).median()))
+    theseStats.append("{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).std()))
+    #print(theseStats)
+    #stats.append(theseStats)
+    # print("Max Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).max()))
+    # print("Min Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).min()))
+    # print("Mean Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).mean()))
+    # print("Median Time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).median()))
+    # print("STD Dev of time",description,": ","{0:.1f}".format(((dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60).std()))
+    # print("\n")
+    df_completed[description]=(dataframe[finalTimeId]-dataframe[initialTimeId])/1000/60
+    dfStats[description]=theseStats
+    #print(dataframe[description])
     
     
 def etaStats(dataframe,description,reference, ETA, actual):
-    dataframe[description]=(dataframe[reference]+dataframe[ETA]*1000-dataframe[actual])/1000/60
-    print("Max Time",description,": ","{0:.1f}".format(((dataframe[description])).max()))
-    print("Min Time",description,": ","{0:.1f}".format(((dataframe[description])).min()))
-    print("Mean Time",description,": ","{0:.1f}".format(((dataframe[description])).mean()))
-    print("Median Time",description,": ","{0:.1f}".format(((dataframe[description])).median()))
-    print("STD Dev of time",description,": ","{0:.1f}".format(((dataframe[description])).std()))
-    print("\n")
+    df_completed[description]=(dataframe[reference]+dataframe[ETA]*1000-dataframe[actual])/1000/60
+    theseStats=[]
+    statsCols.append(description)
+    theseStats.append("{0:.1f}".format(((dataframe[description])).max()))
+    theseStats.append("{0:.1f}".format(((dataframe[description])).min()))
+    theseStats.append("{0:.1f}".format(((dataframe[description])).mean()))
+    theseStats.append("{0:.1f}".format(((dataframe[description])).median()))
+    theseStats.append("{0:.1f}".format(((dataframe[description])).std()))
+    # print("Max Time",description,": ","{0:.1f}".format(((dataframe[description])).max()))
+    # print("Min Time",description,": ","{0:.1f}".format(((dataframe[description])).min()))
+    # print("Mean Time",description,": ","{0:.1f}".format(((dataframe[description])).mean()))
+    # print("Median Time",description,": ","{0:.1f}".format(((dataframe[description])).median()))
+    # print("STD Dev of time",description,": ","{0:.1f}".format(((dataframe[description])).std()))
+    # print("\n")
+    #stats.append(theseStats)
+    dfStats[description]=theseStats
 
-durationStats(df_completed,"TIME_IN_QUEUE","REQUESTED","STARTED")
-#durationStats(df[df['STARTED']-df['REQUESTED']],"TIME_IN_QUEUE","REQUESTED","STARTED")
-durationStats(df_completed,"TIME_WAITING_FOR_PICKUP","STARTED","PICKED_UP")
-durationStats(df_completed,"TOTAL_WAIT_TIME","REQUESTED","PICKED_UP")
-durationStats(df_completed,"TOTAL_TIME_ON_ROUTE","PICKED_UP", "LAST_UPDATED")
-etaStats(df_completed,"ESTIMATED_PICKUP-PICKED_UP","STARTED","ESTIMATED_PICKUP","PICKED_UP")
-etaStats(df_completed,"ESTIMATED_DROPOFF-DROPOFF","PICKED_UP","ESTIMATED_DROPOFF","LAST_UPDATED")
+def findPUeqDO(dataframe,description):
+    uniqueVINs=dataframe['VIN'].unique().tolist()
+    print(uniqueVINs)
+    uniquePUDOs=list(set(dataframe['ORIGIN_LAT'].unique().tolist()).intersection(dataframe['DESTINATION_LAT'].unique().tolist()))
+    print(uniquePUDOs)
+#    for vin in uniqueVINs:
+#         for pudo in uniquePUDOs:
+#             tempDF=dataframe[dataframe.loc[dataframe['VIN'] == vin]]# & dataframe.loc[dataframe['ORIGIN_LAT']==pudo]]
+#             print(tempDF)
+#             for index, row in tempDF.iterrows():
+#                 print(vin, row['VIN'], pudo, row['ORIGIN_LAT'])
+
+#durationStats(df_completed,"Time in Queue (Mins)","REQUESTED","STARTED")
+durationStats(df_completed[df_completed['STARTED']-df_completed['REQUESTED']>(1000*60)],"Time in Queue","REQUESTED","STARTED")
+durationStats(df_completed,"Time Waiting for Pickup (Mins)","STARTED","PICKED_UP")
+durationStats(df_completed,"Total Wait Time (Mins)","REQUESTED","PICKED_UP")
+durationStats(df_completed,"Total Time on Route(Mins)","PICKED_UP", "LAST_UPDATED")
+etaStats(df_completed,"Estimated Pickup - Actual Pickup (Mins)","STARTED","ESTIMATED_PICKUP","PICKED_UP")
+etaStats(df_completed,"Estimated Dropoff - Actual Dropoff (Mins)","PICKED_UP","ESTIMATED_DROPOFF","LAST_UPDATED")
 
 
 #df_filtered = df[(df.STARTED >= ) & (df.year == 2017)]
@@ -45,5 +80,20 @@ print ("Total Completed rides: ",df['RIDE_STATUS'].str.count("COMPLETED").sum()+
 print("Total Rejected Rides: ", df['RIDE_STATUS'].str.count("REJECTED").sum())
 print("Total Abandoned Rides: ", df['RIDE_STATUS'].str.count("ABANDONED").sum())
 
-df_completed.to_csv('../ME Stats Data/11-7-output.csv')
+file = open("11-8-stats.txt","w") 
+ 
+file.write(str("Total Cancelled Rides: ",df['RIDE_STATUS'].str.count("CANCELLED").sum()))
+file.write(str("Total Queued Rides: ",df[(df['STARTED']-df['REQUESTED'])/1000/60>1]['ID'].count()))
+file.write(str("Total Completed rides: ",df['RIDE_STATUS'].str.count("COMPLETED").sum()+df['RIDE_STATUS'].str.count("AT_DROPOFF").sum()))
+file.write(str("Total Rejected Rides: ", df['RIDE_STATUS'].str.count("REJECTED").sum()))
+file.write(str("Total Abandoned Rides: ", df['RIDE_STATUS'].str.count("ABANDONED").sum()))
+ 
+file.close() 
+#findPUeqDO(df_completed,"Pickup equals Dropoff (Y/N)")
+
+#print(stats)
+#print(statsCols)
+
+dfStats.to_csv('../ME Stats Data/11-8-stats.csv')
+df_completed.to_csv('../ME Stats Data/11-8-output.csv')
 #print(df_completed['pickup_actual-eta']/1000/60)
