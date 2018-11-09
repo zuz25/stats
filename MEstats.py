@@ -4,7 +4,7 @@ import time
 #import matplotlib.pyplot as plt
 
 path='../ME Stats Data/'
-date="2018-11-7"
+date="2018-11-8"
 path=path+date+"/"
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 df = pd.read_csv(path+date+'-raw.csv')
@@ -68,7 +68,7 @@ def findPUeqDO(dataframe,description):
 #                 print(vin, row['VIN'], pudo, row['ORIGIN_LAT'])
 
 #durationStats(df_completed,"Time in Queue (Mins)","REQUESTED","STARTED")
-durationStats(df_completed[df_completed['STARTED']-df_completed['REQUESTED']>(1000*60)],"Time in Queue","REQUESTED","STARTED")
+durationStats(df_completed[df_completed['STARTED']-df_completed['REQUESTED']>(1000*60)],"Time in Queue (Mins)","REQUESTED","STARTED")
 durationStats(df_completed,"Time Waiting for Pickup (Mins)","STARTED","PICKED_UP")
 durationStats(df_completed,"Total Wait Time (Mins)","REQUESTED","PICKED_UP")
 durationStats(df_completed,"Total Time on Route(Mins)","PICKED_UP", "LAST_UPDATED")
@@ -77,6 +77,10 @@ etaStats(df_completed,"Estimated Dropoff - Actual Dropoff (Mins)","PICKED_UP","E
 
 
 #df_filtered = df[(df.STARTED >= ) & (df.year == 2017)]
+
+generalStatsIndex=["Total Cancelled Rides: ","Total Queued Rides: ","Total Completed rides: ","Total Rejected Rides: ","Total Abandoned Rides: "]
+dfGeneralStats=pd.DataFrame(index=generalStatsIndex)
+dfGeneralStats["Values (mins)"] = [df['RIDE_STATUS'].str.count("CANCELLED").sum(),df[(df['STARTED']-df['REQUESTED'])/1000/60>1]['ID'].count(),df['RIDE_STATUS'].str.count("COMPLETED").sum()+df['RIDE_STATUS'].str.count("AT_DROPOFF").sum(),df['RIDE_STATUS'].str.count("REJECTED").sum(),df['RIDE_STATUS'].str.count("ABANDONED").sum()]
 print("Total Cancelled Rides: ",df['RIDE_STATUS'].str.count("CANCELLED").sum())
 print("Total Queued Rides: ",df[(df['STARTED']-df['REQUESTED'])/1000/60>1]['ID'].count())
 print ("Total Completed rides: ",df['RIDE_STATUS'].str.count("COMPLETED").sum()+df['RIDE_STATUS'].str.count("AT_DROPOFF").sum())
@@ -104,9 +108,13 @@ file.close()
 
 #print(stats)
 #print(statsCols)
+#DataFrame.to_excel(excel_writer, sheet_name='Sheet1', na_rep='', float_format=None, columns=None, header=True, index=True, index_label=None, startrow=0, startcol=0, engine=None, merge_cells=True, encoding=None, inf_rep='inf', verbose=True, freeze_panes=None)
+
 writer = pd.ExcelWriter(path+date+'-output.xlsx')
-dfStats.to_excel(writer,'stats')
-df_completed.to_excel(writer,'data')
+dfGeneralStats.to_excel(writer,sheet_name='General Stats')
+dfStats.to_excel(writer,sheet_name='stats')
+df_completed.to_excel(writer,sheet_name='data')
+
 writer.save()
 #dfStats.(path+date+'-stats.csv')
 #df_completed.to_csv(path+date+'-output.csv')
