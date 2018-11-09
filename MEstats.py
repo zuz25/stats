@@ -80,15 +80,15 @@ print ("Total Completed rides: ",df['RIDE_STATUS'].str.count("COMPLETED").sum()+
 print("Total Rejected Rides: ", df['RIDE_STATUS'].str.count("REJECTED").sum())
 print("Total Abandoned Rides: ", df['RIDE_STATUS'].str.count("ABANDONED").sum())
 
-file = open("11-8-stats.txt","w") 
- 
-file.write(str("Total Cancelled Rides: ",df['RIDE_STATUS'].str.count("CANCELLED").sum()))
-file.write(str("Total Queued Rides: ",df[(df['STARTED']-df['REQUESTED'])/1000/60>1]['ID'].count()))
-file.write(str("Total Completed rides: ",df['RIDE_STATUS'].str.count("COMPLETED").sum()+df['RIDE_STATUS'].str.count("AT_DROPOFF").sum()))
-file.write(str("Total Rejected Rides: ", df['RIDE_STATUS'].str.count("REJECTED").sum()))
-file.write(str("Total Abandoned Rides: ", df['RIDE_STATUS'].str.count("ABANDONED").sum()))
- 
-file.close() 
+# file = open("11-8-stats.txt","w") 
+#  
+# file.write(str("Total Cancelled Rides: ",df['RIDE_STATUS'].str.count("CANCELLED").sum()))
+# file.write(str("Total Queued Rides: ",df[(df['STARTED']-df['REQUESTED'])/1000/60>1]['ID'].count()))
+# file.write(str("Total Completed rides: ",df['RIDE_STATUS'].str.count("COMPLETED").sum()+df['RIDE_STATUS'].str.count("AT_DROPOFF").sum()))
+# file.write(str("Total Rejected Rides: ", df['RIDE_STATUS'].str.count("REJECTED").sum()))
+# file.write(str("Total Abandoned Rides: ", df['RIDE_STATUS'].str.count("ABANDONED").sum()))
+#  
+# file.close() 
 #findPUeqDO(df_completed,"Pickup equals Dropoff (Y/N)")
 
 #print(stats)
